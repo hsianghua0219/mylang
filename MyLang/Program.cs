@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-
 using MyLang;
 
 class Program
@@ -15,9 +14,10 @@ class Program
     {
         bool tokenizeOnly = false; // tokenize だけで終わるかどうか
         bool parseOnly = false; // parse だけで終わるかどうか
+        bool replEnabled = false;
 
-        // 引数をparseする
-        var rest = new List<string>();
+    // 引数をparseする
+    var rest = new List<string>();
         for (int i = 0; i < args.Length; i++)
         {
             var arg = args[i];
@@ -25,7 +25,7 @@ class Program
             {
                 case "-h":
                 case "--help":
-                    showHelpAndExit();
+                    ShowHelpAndExit();
                     break;
                 case "-t":
                 case "--tokenize":
@@ -39,6 +39,10 @@ class Program
                 case "--debug":
                     Logger.LogEnabled = true;
                     break;
+                case "-e":
+                case "--REPL":
+                    replEnabled = true;
+                    break;
                 default:
                     rest.Add(arg);
                     break;
@@ -46,47 +50,53 @@ class Program
         }
 
         // 引数がないなら、ヘルプを表示して終わる
-        if( rest.Count <= 0)
+        if( rest.Count <= 0 && !parseOnly)
         {
-            showHelpAndExit();
+            ShowHelpAndExit();
         }
-
+        
         // 各実行器を用意する
         ITokenizer tokenizer = new SpaceSeparatedTokenizer();
         var parser = new Parser();
         var interpreter = new Interpreter();
 
-        // Tokenize を行う
-        var tokens = tokenizer.Tokenize(string.Join(" ", rest.ToArray()));
+        do {
+            // Tokenize を行う
+            var tokens = tokenizer.Tokenize(string.Join(" ", rest.ToArray()));
 
-        if( tokenizeOnly)
-        {
-            Console.WriteLine(string.Join(" ", tokens.Select(t => t.Text).ToArray()));
-            exit(0);
+            if (tokenizeOnly)
+            {
+                Console.WriteLine(string.Join(" ", tokens.Select(t => t.Text).ToArray()));
+                Exit(0);
+            }
+
+            // Parse を行う
+            var ast = parser.Parse(tokens);
+
+            if (parseOnly)
+            {
+                Console.WriteLine(new MyLang.Ast.AstDisplayer().BuildString(ast, false));
+                Exit(0);
+            }
+            
+            interpreter.Run(ast);
+
+            string arg = Console.ReadLine();
+            rest = new List<string>() { arg };
+            if (arg == "exit") {
+                replEnabled = false;
+                break;
+            }
         }
+        while (replEnabled);
 
-        // Parse を行う
-        var ast = parser.Parse(tokens);
-
-        if( parseOnly)
-        {
-            Console.WriteLine(new MyLang.Ast.AstDisplayer().BuildString(ast, false));
-            exit(0);
-        }
-
-        // Interpreter で実行する
-        var result = interpreter.Run(ast);
-
-        // 答えを出力する
-        Console.WriteLine(result);
-
-        exit(0);
+        Exit(0);
     }
 
     /// <summary>
     /// ヘルプを表示して終わる
     /// </summary>
-    static void showHelpAndExit()
+    static void ShowHelpAndExit()
     {
         Console.WriteLine(@"
 My Small Language.
@@ -106,7 +116,7 @@ Example:
     > MyLang.exe --tokenize ""1 + 2 * 3""
     > MyLang.exe --parse ""1 + 2 * 3""
 ");
-        exit(0);
+        Exit(0);
     }
 
     /// <summary>
@@ -114,7 +124,7 @@ Example:
     ///
     /// Visual Studioの開津環境で、コンソールがすぐに閉じてしまうのの対策として使用している
     /// </summary>
-    static void waitKey()
+    static void WaitKey()
     {
         if (Debugger.IsAttached)
         {
@@ -126,11 +136,10 @@ Example:
     /// 終了する
     /// </summary>
     /// <param name="resultCode"></param>
-    static void exit(int resultCode) 
+    static void Exit(int resultCode) 
     {
-        waitKey();
+        WaitKey();
         Environment.Exit(resultCode);
     }
-
 }
 

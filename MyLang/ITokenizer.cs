@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace MyLang
 {
@@ -20,6 +16,15 @@ namespace MyLang
         Minus, // "-"
         Star, // "*"
         Slash, // "/"
+        Semicolon, // ";"
+        Equal, // "="
+        Round_L, // "("
+        Round_R, // ")"
+        Comma, // ","
+        Curly_L, // "{"
+        Curly_R, // "}"
+
+        Let, Print, Function, Return, String, If, ElseIf, Else, DoWhile, While, For, Equals, unEqual, G, L, GoE, LoE
     }
 
     /// <summary>
@@ -36,6 +41,7 @@ namespace MyLang
             Text = text;
         }
 
+        public bool IsTerminate => (Type == TokenType.Terminate);
         public bool IsNumber => (Type == TokenType.Number);
         public bool IsSymbol => (Type == TokenType.Symbol);
         public bool IsBinaryOperator => (Type == TokenType.Plus || Type == TokenType.Minus || Type == TokenType.Star || Type == TokenType.Slash);
