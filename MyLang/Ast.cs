@@ -49,8 +49,8 @@ namespace MyLang
         /// </summary>
         public class Number : Exp
         {
-            public readonly float Value;
-            public Number(float value) { Value = value; }
+            public readonly decimal Value;
+            public Number(decimal value) { Value = value; }
             public override Tuple<string, Ast[]> GetDisplayInfo() { return Tuple.Create(Value.ToString(), (Ast[])null); }
         }
         public class Symbol : Exp

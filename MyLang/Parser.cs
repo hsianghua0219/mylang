@@ -207,7 +207,7 @@ namespace MyLang
             if (token.IsNumber)
             {
                 Progress();
-                return new Ast.Number(float.Parse(token.Text));
+                return new Ast.Number(decimal.Parse(token.Text));
             }
             else if (token.IsSymbol) {
                 var name = Symbol();

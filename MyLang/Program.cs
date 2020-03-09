@@ -40,7 +40,7 @@ class Program
                     Logger.LogEnabled = true;
                     break;
                 case "-e":
-                case "--REPL":
+                case "--repl":
                     replEnabled = true;
                     break;
                 default:
@@ -50,7 +50,7 @@ class Program
         }
 
         // 引数がないなら、ヘルプを表示して終わる
-        if( rest.Count <= 0 && !parseOnly)
+        if( rest.Count <= 0 && !replEnabled)
         {
             ShowHelpAndExit();
         }
@@ -81,11 +81,17 @@ class Program
             
             interpreter.Run(ast);
 
-            string arg = Console.ReadLine();
-            rest = new List<string>() { arg };
-            if (arg == "exit") {
-                replEnabled = false;
-                break;
+            if (replEnabled)
+            {
+                Console.ForegroundColor = ConsoleColor.Cyan;
+                Console.Write(">");
+                string arg = Console.ReadLine();
+                Console.ForegroundColor = ConsoleColor.White;
+                rest = new List<string>() { arg };
+                if (arg == "exit" || arg == "exit;") {
+                    replEnabled = false;
+                    break;
+                }
             }
         }
         while (replEnabled);
@@ -105,6 +111,7 @@ Usage:
     > MyLang.exe [options...] ""program""
 
 Options:
+    -e, --repl     : Read Eval Print Loop.
     -t, --tokenize : Show token list.
     -p, --parse    : Show parsed abstract syntax tree.
     -d, --debug    : Print debug log (for debug).
@@ -112,6 +119,7 @@ Options:
 
 Example:
     > MyLang.exe ""1 + 2""
+    > MyLang.exe --repl ""2 * 3"" ""6 + 1"" ""exit""
     > MyLang.exe --debug ""1 + 2 * 3""
     > MyLang.exe --tokenize ""1 + 2 * 3""
     > MyLang.exe --parse ""1 + 2 * 3""
@@ -139,6 +147,7 @@ Example:
     static void Exit(int resultCode) 
     {
         WaitKey();
+        Console.ForegroundColor = ConsoleColor.Gray;
         Environment.Exit(resultCode);
     }
 }
