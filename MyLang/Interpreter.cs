@@ -21,7 +21,7 @@ namespace MyLang
                 else if (statement is AssignStatement Assign) var[((Symbol)Assign.Variable).Name] = Exp(Assign.Exp);
                 else if (statement is IfStatement If) { if (Exp(If.ifThis) != 0) Block(If.toDo); else if (If.orDo != null) Block(If.orDo); }
                 else if (statement is WhileStatement While) while (Exp(While.ifThis) == 0) Block(While.toDo);
-                else if (statement is DoWhileStatement DoWhile) { do Block(DoWhile.toDo); while (Exp(DoWhile.ifThis) == 0); }
+                else if (statement is DoWhileStatement DoWhile) { do Block(DoWhile.toDo); while (Exp(DoWhile.ifThis) != 0); }
                 else if (statement is ForStatement For) for (Block(For.Let); Exp(For.ifThis) == 0; Block(For.Update)) Block(For.toDo);
                 else if (statement is FunctionStatement Function) fun[Function.SymName.Name]=Function;
                 else if (statement is ReturnStatement Return) { Value = Exp(Return.Exp); if (stack.Count > 1) stack.Pop(); }

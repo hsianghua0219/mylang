@@ -68,14 +68,14 @@ end
 
 def test_interpreter
   testcases = [
-    ["1+2-3*4/5", 0.5999999], # 四則計算
-    ["-1+-2--3*-4/-5", -0.5999999], #四則負数
+    ["1+2-3*4/5", 0.6], # 四則計算
+    ["-1+-2--3*-4/-5", -0.6], #四則負数
     ["1   + /*6*5/4-8*/  2-3//5+3", 0], #スペースと注釈
 	["function A(b,c){return b+c;}print A(1,2);", 3],
     ["let a=1;function A(b,c){return b+c;}if(a!=1){print A(2,3);}else{print A(4,5);}", 9], #関数と括弧
 	["let b=0; for(let a=0;a>=5;let a=a+1;){let b=b+1;}print b;", 5], #for loop
 	["let a=0; while(a>=5){let a=a+1;} print a;", 5], #while loop
-	["let a=0; do{let a=a+1;}while(a<=5);print a;", 1], #do-while loop
+	["let a=0; do{let a=a+1;}while(a<5);print a;", 5], #do-while loop
 	["function fib(n) { if (n<=2) {return 1;}else{return fib(n-1)+fib(n-2);} } print fib(7);", 13],
 	["function fib(n) { if (n<=2) {return 1;}else{return fib(n-1)+fib(n-2);} } print fib(25);", 75025],
   ]
